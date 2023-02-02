@@ -1,0 +1,705 @@
+openapi: 3.0.0
+x-stoplight:
+  id: nn014q8y3zqnq
+info:
+  title: api
+  version: "1.0"
+servers:
+  - url: "http://localhost"
+paths:
+  /login:
+    post:
+      summary: ログイン
+      operationId: post-login
+      responses:
+        "204":
+          description: No Content
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: test@example.com
+                  description: メールアドレス
+                password:
+                  type: string
+                  example: password
+                  format: password
+                  description: パスワード
+              required:
+                - email
+                - password
+            examples:
+              Example 1:
+                value:
+                  email: test@example.com
+                  password: password
+  /logout:
+    post:
+      summary: ログアウト
+      operationId: post-logout
+      responses:
+        "204":
+          description: No Content
+    parameters: []
+  /register:
+    post:
+      summary: ユーザー新規登録
+      operationId: post-register
+      responses:
+        "204":
+          description: No Content
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                  description: ニックネーム
+                  example: ニックネーム
+                  minLength: 1
+                  maxLength: 20
+                email:
+                  type: string
+                  format: email
+                  example: test@example.com
+                  description: メールアドレス
+                password:
+                  type: string
+                  example: password
+                  format: password
+                  description: パスワード
+              required:
+                - nickname
+                - email
+                - password
+            examples:
+              Example 1:
+                value:
+                  nickname: ニックネーム
+                  email: test@example.com
+                  password: password
+    parameters: []
+  /me:
+    get:
+      summary: 自ユーザー情報取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+              examples:
+                Example 1:
+                  value:
+                    id: 0
+                    nickname: string
+                    email: user@example.com
+                    icon_url: "http://localhost/users/image/1"
+      operationId: get-me
+  /my/icons:
+    parameters: []
+    post:
+      summary: 自ユーザーアイコン変更
+      operationId: post-my-icons
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+                example: "http://localhost/users/image/1"
+                format: uri
+              examples:
+                Example 1:
+                  value: "http://localhost/users/image/1"
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: アイコン画像（jpg、jpeg、png、bmp、gif、svg、webpのみ）
+                  maxLength: 5242880
+              required:
+                - image
+            examples:
+              Example 1:
+                value:
+                  image: string
+  /my/channels:
+    get:
+      summary: 自身の参加中チャンネル一覧取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Channel"
+              examples:
+                Example 1:
+                  value:
+                    - id: 1
+                      uuid: abcdef12345
+                      name: チャンネル名
+                      joined: true
+      operationId: get-my-channels
+  /channels:
+    get:
+      summary: チャンネル一覧取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Channel"
+                  links:
+                    type: object
+                    required:
+                      - first
+                      - last
+                    properties:
+                      first:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels?page=1"
+                      last:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels?page=1"
+                      prev:
+                        type: string
+                        format: uri
+                        default: "http://localhost/api/channels?page=1"
+                        nullable: true
+                      next:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels?page=1"
+                        nullable: true
+                  meta:
+                    type: object
+                    required:
+                      - current_page
+                      - from
+                      - to
+                      - last_page
+                      - links
+                      - path
+                      - per_page
+                      - total
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      to:
+                        type: integer
+                        example: 3
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: "http://localhost/api/channels?page=1"
+                              format: uri
+                              nullable: true
+                            label:
+                              type: string
+                              example: "&laquo; Previous"
+                            active:
+                              type: boolean
+                          required:
+                            - label
+                            - active
+                      path:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels"
+                      per_page:
+                        type: integer
+                        example: 20
+                      total:
+                        type: integer
+                        example: 3
+                required:
+                  - links
+                  - meta
+              examples:
+                Example 1:
+                  value:
+                    data:
+                      - id: 1
+                        uuid: abcdef12345
+                        name: チャンネル名
+                        joined: true
+                    links:
+                      first: "http://localhost/api/channels?page=1"
+                      last: "http://localhost/api/channels?page=1"
+                      prev: "http://localhost/api/channels?page=1"
+                      next: "http://localhost/api/channels?page=1"
+                    meta:
+                      current_page: 1
+                      from: 1
+                      to: 3
+                      last_page: 1
+                      links:
+                        - url: null
+                          label: "&laquo; Previous"
+                          active: false
+                        - url: "http://localhost/api/channels?page=1"
+                          label: "1"
+                          active: true
+                        - url: null
+                          label: Next &raquo;
+                          active: false
+                      path: "http://localhost/api/channels"
+                      per_page: 20
+                      total: 3
+      operationId: get-channels
+      description: ""
+      parameters:
+        - schema:
+            type: integer
+            example: 1
+            default: 1
+          in: query
+          name: page
+          description: ページ番号
+    post:
+      summary: チャンネル新規登録
+      operationId: post-channels
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Channel"
+              examples:
+                Example 1:
+                  value:
+                    id: 1
+                    uuid: abcdef12345
+                    name: チャンネル名
+                    joined: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              x-examples:
+                Example 1:
+                  name: チャンネル名
+              properties:
+                name:
+                  type: string
+                  example: チャンネル名
+                  description: チャンネル名
+                  maxLength: 30
+              required:
+                - name
+            examples:
+              Example 1:
+                value:
+                  name: チャンネル名
+  "/channels/{uuid}/messages":
+    parameters:
+      - $ref: "#/components/parameters/ChannelUUID"
+    get:
+      summary: メッセージ一覧取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                x-examples:
+                  Example 1:
+                    data:
+                      - id: 12
+                        nickname: テスト
+                        email: test1@example.com
+                        email_verified_at: null
+                        created_at: "2022-12-25T14:37:50.000000Z"
+                        updated_at: "2022-12-25T14:37:50.000000Z"
+                    path: "http://localhost/api/test"
+                    per_page: 5
+                    next_cursor: eyJpZCI6OCwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ
+                    next_page_url: "http://localhost/api/test?cursor=eyJpZCI6OCwiX3BvaW50c1RvTmV4dEl0ZW1zIjp0cnVlfQ"
+                    prev_cursor: null
+                    prev_page_url: null
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Message"
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                      last:
+                        type: string
+                      prev:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels/abc123/messages?cursor=eyJpZCIXXXXXXXX"
+                      next:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels/abc123/messages?cursor=eyJpZCIXXXXXXXX"
+                  meta:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                        format: uri
+                        example: "http://localhost/api/channels/abc123/messages"
+                      per_page:
+                        type: integer
+                        example: 20
+                        format: int32
+                      next_cursor:
+                        type: string
+                        example: eyJpZCIXXXXXXXX
+                      prev_cursor:
+                        type: string
+                        example: eyJpZCIXXXXXXXX
+                    required:
+                      - path
+                      - per_page
+              examples:
+                Example 1:
+                  value:
+                    data:
+                      - id: 1
+                        user:
+                          id: 0
+                          nickname: string
+                          email: user@example.com
+                          icon_url: "http://localhost/users/image/1"
+                        ts: 1649479571124
+                        content: Hello World!!
+                        attachment:
+                          id: 1
+                          url: "http://localhost/attachments/1"
+                    links:
+                      first: string
+                      last: string
+                      prev: "http://localhost/api/channels/abc123/messages?cursor=eyJpZCIXXXXXXXX"
+                      next: "http://localhost/api/channels/abc123/messages?cursor=eyJpZCIXXXXXXXX"
+                    meta:
+                      path: "http://localhost/api/channels/abc123/messages"
+                      per_page: 20
+                      next_cursor: eyJpZCIXXXXXXXX
+                      prev_cursor: eyJpZCIXXXXXXXX
+      operationId: get-channels-hash-messages
+      description: ""
+      parameters:
+        - schema:
+            type: string
+            example: eyJpZCIXXXXXXXX
+          in: query
+          name: cursor
+          description: カーソル
+    post:
+      summary: メッセージ登録
+      operationId: post-channels-hash-messages
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Message"
+              examples:
+                Example 1:
+                  value:
+                    id: 1
+                    user:
+                      id: 0
+                      nickname: string
+                      email: user@example.com
+                      icon_url: "http://localhost/users/image/1"
+                    ts: 1649479571124
+                    content: Hello World!!
+                    attachment:
+                      id: 1
+                      url: "http://localhost/attachments/1"
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: メッセージ本文
+                attachment_id:
+                  type: integer
+                  format: int64
+                  example: 1
+                  minimum: 1
+                  description: 添付ファイルID
+            examples:
+              Example 1:
+                value:
+                  content: string
+                  attachment_id: 1
+  "/channels/{uuid}/messages/{id}":
+    parameters:
+      - name: uuid
+        in: path
+        schema:
+          type: string
+          example: abcde12345
+        description: チャンネルuuid
+        required: true
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: メッセージID
+    delete:
+      summary: メッセージ削除
+      operationId: delete-channels-uuid-messages---copy
+      responses:
+        "204":
+          description: No Content
+  "/channels/{uuid}/messages/polling":
+    parameters:
+      - $ref: "#/components/parameters/ChannelUUID"
+    get:
+      summary: メッセージポーリングAPI
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Message"
+              examples:
+                Example 1:
+                  value:
+                    - id: 1
+                      user:
+                        id: 0
+                        nickname: string
+                        email: user@example.com
+                        icon_url: "http://localhost/users/image/1"
+                      ts: 1649479571124
+                      content: Hello World!!
+                      attachment:
+                        id: 1
+                        url: "http://localhost/attachments/1"
+      operationId: get-channels-hash-messages-polling
+      parameters:
+        - schema:
+            type: integer
+          in: query
+          name: ts
+          description: メッセージ送信日時（Timestampミリ秒）
+          required: true
+  "/channels/{uuid}/attachments":
+    parameters:
+      - $ref: "#/components/parameters/ChannelUUID"
+    post:
+      summary: 添付ファイル登録
+      operationId: post-channels-hash-images
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachment"
+      description: ""
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  maxLength: 1048576
+                  description: "添付ファイル（pdf,xlsx,docxのみ許可）"
+              required:
+                - file
+            examples:
+              Example 1:
+                value:
+                  file: string
+        description: ""
+  "/channels/{uuid}/join":
+    parameters:
+      - $ref: "#/components/parameters/ChannelUUID"
+    post:
+      summary: チャンネル参加
+      operationId: post-channels-hash-join
+      responses:
+        "204":
+          description: No Content
+      description: ""
+  "/channels/{uuid}/leave":
+    parameters:
+      - $ref: "#/components/parameters/ChannelUUID"
+    post:
+      summary: チャンネル退出
+      operationId: post-channels-hash-leave
+      responses:
+        "204":
+          description: No Content
+      description: ""
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID
+          format: int64
+        nickname:
+          type: string
+          description: ニックネーム
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        icon_url:
+          type: string
+          format: uri
+          example: "http://localhost/users/image/1"
+          description: アイコン画像URL
+      required:
+        - id
+        - nickname
+        - email
+      x-examples: {}
+    Channel:
+      title: Channel
+      x-stoplight:
+        id: 1mrzyllmfha05
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          minimum: 1
+          format: int64
+        uuid:
+          type: string
+          example: abcdef12345
+          description: チャンネルハッシュキー
+        name:
+          type: string
+          description: チャンネル名
+          example: チャンネル名
+        joined:
+          type: boolean
+          description: 参加フラグ
+      required:
+        - id
+        - uuid
+        - name
+        - joined
+    Message:
+      title: Message
+      x-stoplight:
+        id: mjccrdl91xjr3
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          minimum: 1
+          example: 1
+        user:
+          $ref: "#/components/schemas/User"
+          description: 送信ユーザー
+        ts:
+          type: integer
+          example: 1649479571124
+          description: メッセージ送信日時（Timestampミリ秒）
+          format: int64
+        content:
+          type: string
+          example: Hello World!!
+          description: 本文
+        attachment:
+          $ref: "#/components/schemas/Attachment"
+          description: 添付ファイル
+      required:
+        - id
+        - user
+        - ts
+    Attachment:
+      title: Attachment
+      x-stoplight:
+        id: sna6f6h5orbgz
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+          minimum: 1
+        url:
+          type: string
+          format: uri
+          example: "http://localhost/attachments/1"
+      required:
+        - id
+        - url
+  securitySchemes: {}
+  parameters:
+    ChannelUUID:
+      name: uuid
+      in: path
+      schema:
+        type: string
+        example: abcde12345
+      description: チャンネルuuid
+      required: true
+  responses: {}

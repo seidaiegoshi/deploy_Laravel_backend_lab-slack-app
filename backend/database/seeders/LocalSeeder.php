@@ -15,9 +15,7 @@ class LocalSeeder extends Seeder
      */
     public function run()
     {
-        Channel::create([
-            'uuid' =>  \Str::uuid(),
-            'name' => 'Testチャンネル',
-        ]);
+        // 「Factoryの定義に合わせて、１０件のデータをつくってくれー」って感じの指定です
+        Channel::factory()->count(10)->create();
     }
 }

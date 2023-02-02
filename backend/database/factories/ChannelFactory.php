@@ -17,7 +17,8 @@ class ChannelFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'uuid' => \Str::uuid(),
+            'name' => fake()->colorName(),
         ];
     }
 }

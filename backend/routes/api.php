@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ChannelController;
 use App\Http\Controllers\Api\MyResourceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,16 +25,13 @@ Route::middleware(['auth:sanctum'])
     ->name("api.")
     ->group(function () {
 
-        Route::post('/channels', function (Request $request) {
-            // とりあえず、ベタ書きでレスポンスする
-            // レスポンスの形をswaggerと合わせる
-            return response()->json([
-                'id' => 1,
-                'uuid' => \Str::uuid(),
-                'name' => 'テストチャンネルの名前',
-                'joined' => true,
-            ]);
-        });
+        Route::prefix('/channels')
+            ->name('channels.')
+            ->group(function () {
+                Route::post('', [ChannelController::class, 'store'])->name(
+                    'store'
+                );
+            });
 
 
         Route::get('/me', [MyResourceController::class, "me"])->name("me");

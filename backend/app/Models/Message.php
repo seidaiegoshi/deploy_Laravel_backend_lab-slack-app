@@ -16,4 +16,19 @@ class Message extends Model
     protected $fillable = ['channel_id', 'user_id', 'content'];
 
     protected $dateFormat = 'Y-m-d H:i:s.v';
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function attachments()
+    {
+        return $this->belongsToMany(Attachment::class);
+    }
+
+    public function channel()
+    {
+        return $this->belongsTo(Channel::class);
+    }
 }

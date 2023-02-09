@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Channel extends Model
 {
@@ -14,4 +15,15 @@ class Channel extends Model
 
     // Eloquentを通して更新や登録が可能なフィールド（ホワイトリストを定義）
     protected $fillable = ['uuid', 'name'];
+
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
+    public function users()
+    {
+        return $this->BelongsToMany(User::class);
+    }
 }

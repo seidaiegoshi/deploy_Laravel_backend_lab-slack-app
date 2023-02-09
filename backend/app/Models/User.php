@@ -47,7 +47,7 @@ class User extends Authenticatable
 
     public function channels()
     {
-        return $this->belongsToMany(Channels::class);
+        return $this->belongsToMany(Channel::class);
     }
 
     public function messages()

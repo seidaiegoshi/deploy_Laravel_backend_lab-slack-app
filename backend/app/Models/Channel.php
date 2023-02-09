@@ -24,6 +24,6 @@ class Channel extends Model
 
     public function users()
     {
-        return $this->BelongsToMany(User::class);
+        return $this->belongsToMany(User::class);
     }
 }

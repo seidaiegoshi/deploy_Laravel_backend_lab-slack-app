@@ -17,3 +17,54 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::middleware(['auth:sanctum'])
+    ->name("api.")
+    ->group(function () {
+
+        Route::post('/channels', function (Request $request) {
+            // とりあえず、ベタ書きでレスポンスする
+            // レスポンスの形をswaggerと合わせる
+            return response()->json([
+                'id' => 1,
+                'uuid' => \Str::uuid(),
+                'name' => 'テストチャンネルの名前',
+                'joined' => true,
+            ]);
+        });
+
+
+        Route::get('/me', function () {
+            // とりあえず、ベタ書きでレスポンスする
+            // レスポンスの形をswaggerと合わせる
+            return response()->json([
+                'id' => 0,
+                'nickname' => "string",
+                'email' => "user@example.com",
+                'icon_url' => "http://localhost/users/image/1",
+            ]);
+        });
+
+
+        Route::post("/my/icons", function (Request $request) {
+            return response()->json(
+                "http://localhost/users/image/1"
+            );
+        });
+
+        Route::get('/my/channels', function () {
+            // とりあえず、ベタ書きでレスポンスする
+            // レスポンスの形をswaggerと合わせる
+            return response()->json([
+                'id' => 1,
+                'uuid' => "abcdef12345",
+                'name' => "チャンネル",
+                'joined' => true,
+            ]);
+        });
+
+        Route::delete("/channels/{uuid}/messages/{id}", function ($uuid, $id) {
+            return response()->noContent();
+        });
+    });

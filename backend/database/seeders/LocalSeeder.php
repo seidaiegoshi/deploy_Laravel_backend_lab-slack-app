@@ -18,7 +18,7 @@ class LocalSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->create([
+        $testUser = User::factory()->create([
             'email' => 'test@example.com',
             'nickname' => 'テストユーザー',
         ]);
@@ -26,21 +26,36 @@ class LocalSeeder extends Seeder
             'email' => 'test2@example.com',
             'nickname' => 'テストユーザー2',
         ]);
-        User::factory()
+        $users = User::factory()
             ->count(8)
             ->create();
-        $channels = Channel::factory()
-            ->count(10)
-            ->create();
-        foreach ($channels as $channel) {
-            Message::factory()
-                ->count(10)
-                ->create([
-                    'channel_id' => $channel->id,
-                ]);
-        }
-        Attachment::factory()
-            ->count(10)
-            ->create();
+
+        Channel::factory()
+            ->hasAttached($users->random(3)->push($testUser))
+            ->create([
+                'name' => 'Quiet Room',
+            ]);
+
+        Channel::factory()
+            ->hasAttached($users->push($testUser))
+            ->has(
+                Message::factory()
+                    ->count(100)
+                    ->recycle($users)
+            )
+            ->create([
+                'name' => 'Noisy Room',
+            ]);
+
+        Channel::factory()
+            ->hasAttached($randomUsers = $users->random(5)->push($testUser))
+            ->has(
+                Message::factory()
+                    ->count(10)
+                    ->recycle($randomUsers)
+            )
+            ->create([
+                'name' => 'Normal Room',
+            ]);
     }
 }

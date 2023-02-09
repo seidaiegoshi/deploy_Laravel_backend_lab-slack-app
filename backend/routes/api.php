@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\MyResourceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,16 +36,7 @@ Route::middleware(['auth:sanctum'])
         });
 
 
-        Route::get('/me', function () {
-            // とりあえず、ベタ書きでレスポンスする
-            // レスポンスの形をswaggerと合わせる
-            return response()->json([
-                'id' => 0,
-                'nickname' => "string",
-                'email' => "user@example.com",
-                'icon_url' => "http://localhost/users/image/1",
-            ]);
-        });
+        Route::get('/me', [MyResourceController::class, "me"])->name("me");
 
 
         Route::post("/my/icons", function (Request $request) {

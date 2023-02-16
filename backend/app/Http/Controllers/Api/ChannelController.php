@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Api\ChannelStoreRequest;
 
 class ChannelController extends Controller
 {
@@ -25,11 +26,11 @@ class ChannelController extends Controller
         return response()->json($channels);
     }
 
-    public function store(Request $request)
+    public function store(ChannelStoreRequest $request)
     {
         $channel = Channel::create([
             'uuid' => Str::uuid(),
-            'name' => $request->input('name'),
+            'name' => $request->validated('name'),
         ]);
 
         $channel->users()->sync([Auth::id()]);

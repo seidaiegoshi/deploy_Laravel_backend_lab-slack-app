@@ -11,6 +11,7 @@ class AttachmentController extends Controller
 {
     public function download(Request $request, int $attachmentId)
     {
+        // findしてあれば取得、なければabort(404)を返す
         $attachment = Attachment::findOrFail($attachmentId);
 
         return Storage::download($attachment->path, $attachment->original_filename);

@@ -18,10 +18,12 @@ class MessageController extends Controller
     {
         /** @var \Illuminate\Pagination\CursorPaginator $messages */
         $messages = Message::with(['user', 'attachments'])
+            // メッセージの情報で、チャンネルのuuidが一致するものを取得
             ->whereHas('channel', function (Builder $builder) use ($uuid) {
                 $builder->where('uuid', $uuid);
             })
             ->orderBy('id', 'desc')
+            // 20件部に読み込む。スクロールしたら更に20件読み込む。
             ->cursorPaginate(20);
 
         return response()->json($messages);
@@ -29,6 +31,8 @@ class MessageController extends Controller
 
     public function polling(Request $request, string $uuid)
     {
+        // ホストコンピュータに複数の端末が接続されているネットワークシステムにおいて、端末に対して、送信したいデータがあるかどうかを問い合わせること
+        // タイムスタンプを付けて、
         $dateTimeString = Carbon::createFromTimestampMs(
             $request->input('ts')
         )->format('Y-m-d H:i:s.v');
@@ -47,12 +51,14 @@ class MessageController extends Controller
     public function store(Request $request, string $uuid)
     {
         $message = DB::transaction(function () use ($request, $uuid) {
+            // 複数のクエリを発行するので、トランザクションにする。
             $message = Message::create([
                 'channel_id' => Channel::where('uuid', $uuid)->first()->id,
                 'user_id' => Auth::id(),
                 'content' => $request->input('content'),
             ]);
 
+            // 添付ファイルのIDがあれば、アタッチメントの中間テーブルにレコードを追加
             if ($attachmentId = $request->input('attachment_id')) {
                 $message->attachments()->attach($attachmentId);
             }
@@ -69,13 +75,16 @@ class MessageController extends Controller
     {
         DB::transaction(function () use ($id) {
             $message = Message::with('attachments')->find($id);
+            // メッセージを消す
             $message->delete();
+            // 中間テーブルのアタッチメントをすべて消す。
             if ($message->attachments->isNotEmpty()) {
                 $message->attachments()->sync([]);
                 foreach ($message->attachments as $attachment) {
                     $attachment->delete();
                 }
 
+                // アタッチメントを消す(ファイル)
                 Storage::delete(
                     $message->attachments->pluck('path')->toArray()
                 );

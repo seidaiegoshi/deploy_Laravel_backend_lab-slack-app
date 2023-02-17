@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\MessagePollingRequest;
+use App\Http\Requests\Api\MessageStoreRequest;
 use App\Models\Channel;
 use App\Models\Message;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
-    public function index(Request $request, string $uuid)
+    public function index(MessageStoreRequest $request, string $uuid)
     {
         /** @var \Illuminate\Pagination\CursorPaginator $messages */
         $messages = Message::with(['user', 'attachments'])
@@ -29,12 +31,12 @@ class MessageController extends Controller
         return response()->json($messages);
     }
 
-    public function polling(Request $request, string $uuid)
+    public function polling(MessagePollingRequest $request, string $uuid)
     {
         // ホストコンピュータに複数の端末が接続されているネットワークシステムにおいて、端末に対して、送信したいデータがあるかどうかを問い合わせること
         // タイムスタンプを付けて、
         $dateTimeString = Carbon::createFromTimestampMs(
-            $request->input('ts')
+            $request->validated('ts')
         )->format('Y-m-d H:i:s.v');
 
         $messages = Message::with(['user', 'attachments'])
@@ -55,11 +57,11 @@ class MessageController extends Controller
             $message = Message::create([
                 'channel_id' => Channel::where('uuid', $uuid)->first()->id,
                 'user_id' => Auth::id(),
-                'content' => $request->input('content'),
+                'content' => $request->validated('content'),
             ]);
 
             // 添付ファイルのIDがあれば、アタッチメントの中間テーブルにレコードを追加
-            if ($attachmentId = $request->input('attachment_id')) {
+            if ($attachmentId = $request->validated('attachment_id')) {
                 $message->attachments()->attach($attachmentId);
             }
 

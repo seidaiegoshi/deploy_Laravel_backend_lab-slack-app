@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\MyIconStoreRequest;
 use App\Models\Channel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class MyResourceController extends Controller
         return response()->json($channels);
     }
 
-    public function updateIcons(Request $request)
+    public function updateIcons(MyIconStoreRequest $request)
     {
         //自分の画像を登録する。
 

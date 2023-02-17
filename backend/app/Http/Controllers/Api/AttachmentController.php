@@ -7,10 +7,11 @@ use App\Models\Attachment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Api\AttachmentStoreRequest;
 
 class AttachmentController extends Controller
 {
-    public function storeAttachmentFile(Request $request, string $uuid)
+    public function storeAttachmentFile(AttachmentStoreRequest $request, string $uuid)
     {
         $attachment = DB::transaction(function () use ($request, $uuid) {
             $savedPath = $request->file->store("channels/{$uuid}/attachments");

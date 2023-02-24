@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Api\MessageIndexRequest;
 use App\Http\Requests\Api\MessageDestroyRequest;
+use App\Http\Resources\MessageResource;
 
 class MessageController extends Controller
 {
@@ -30,7 +31,7 @@ class MessageController extends Controller
             // 20件部に読み込む。スクロールしたら更に20件読み込む。
             ->cursorPaginate(20);
 
-        return response()->json($messages);
+        return MessageResource::collection($messages);
     }
 
     public function polling(MessagePollingRequest $request, string $uuid)
@@ -49,7 +50,7 @@ class MessageController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        return response()->json($messages);
+        return MessageResource::collection($messages);
     }
 
     public function store(Request $request, string $uuid)
@@ -72,7 +73,7 @@ class MessageController extends Controller
             return $message;
         });
 
-        return response()->json($message);
+        return new MessageResource($message);
     }
 
     public function destroy(MessageDestroyRequest $request, string $uuid, string $id)

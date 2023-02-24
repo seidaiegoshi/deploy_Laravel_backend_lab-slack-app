@@ -11,6 +11,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Api\ChannelStoreRequest;
 use App\Http\Resources\ChannelResource;
 
+
 class ChannelController extends Controller
 {
 
@@ -33,10 +34,15 @@ class ChannelController extends Controller
 
     public function store(ChannelStoreRequest $request)
     {
-        $channel = $this->channel->store($request->validated('name'));
+        //途中でコケたらロールバックするようにトランザクションにする。
+        $channel = \DB::transaction(
+            function () use ($request) {
+                $channel = $this->channel->store($request->validated('name'));
 
-        $this->channel->addFirstMember($channel, Auth::id());
-
+                $this->channel->addFirstMember($channel, Auth::id());
+                return $channel;
+            }
+        );
         return new ChannelResource($channel);
     }
 

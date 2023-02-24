@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Channel;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -9,13 +10,9 @@ class ChannelPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
+
+    public function show(User $user, Channel $channel)
     {
-        //
+        return $channel->users->contains('id', $user->id);
     }
 }

@@ -18,7 +18,7 @@ class ChannelStoreTest extends TestCase
     public function チャンネルにデータを登録するテスト()
     {
 
-
+        //----------準備----------
         // APIを実行するユーザーを作成
         $user = \App\Models\User::factory()->create();
         // 送信データを定義
@@ -26,6 +26,8 @@ class ChannelStoreTest extends TestCase
             'name' => 'チャンネル名です',
         ];
 
+
+        // ----------実行----------
         // API実行
         $response = $this->actingAs($user)->json(
             'POST',
@@ -33,6 +35,7 @@ class ChannelStoreTest extends TestCase
             $postData
         );
 
+        // ----------アサート----------
         // レスポンスをアサート
         $response->assertStatus(201)->assertJson([
             // サーバサイドで振られるIDやUUIDは確認しようがないため除外

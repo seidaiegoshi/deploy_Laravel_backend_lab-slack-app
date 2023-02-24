@@ -13,10 +13,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\Api\MessageIndexRequest;
 
 class MessageController extends Controller
 {
-    public function index(MessageStoreRequest $request, string $uuid)
+    public function index(MessageIndexRequest $request, string $uuid)
     {
         /** @var \Illuminate\Pagination\CursorPaginator $messages */
         $messages = Message::with(['user', 'attachments'])

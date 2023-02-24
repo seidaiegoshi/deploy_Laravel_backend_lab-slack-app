@@ -14,6 +14,9 @@ class AttachmentResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'url' => route('web.attachments', ['attachmentId' => $this->id]),
+        ];
     }
 }

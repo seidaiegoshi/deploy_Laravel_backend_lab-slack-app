@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Channel;
+
 
 class AttachmentStoreRequest extends FormRequest
 {
@@ -13,7 +15,8 @@ class AttachmentStoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $channel = Channel::where('uuid', $this->route('uuid'))->first();
+        return $this->user()->can('show', $channel);
     }
 
     /**

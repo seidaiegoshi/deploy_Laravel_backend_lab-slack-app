@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
+
 
 class ChannelResource extends JsonResource
 {
@@ -14,6 +16,11 @@ class ChannelResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'uuid' => $this->uuid,
+            'name' => $this->name,
+            'joined' => $this->users->contains('id', Auth::id()),
+        ];
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Api\ChannelStoreRequest;
+use App\Http\Resources\ChannelResource;
 
 class ChannelController extends Controller
 {
@@ -23,7 +24,7 @@ class ChannelController extends Controller
             ->paginate(20);
 
 
-        return response()->json($channels);
+        return ChannelResource::collection($channels);
     }
 
     public function store(ChannelStoreRequest $request)
@@ -35,7 +36,7 @@ class ChannelController extends Controller
 
         $channel->users()->sync([Auth::id()]);
 
-        return response()->json($channel);
+        return new ChannelResource($channel);
     }
 
     public function join(Request $request, string $uuid)

@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Resources\ChannelResource;
+
 
 class MyResourceController extends Controller
 {
@@ -31,7 +33,7 @@ class MyResourceController extends Controller
             ->orderBy('created_at', 'asc')
             ->get();
 
-        return response()->json($channels);
+        return ChannelResource::collection($channels);
     }
 
     public function updateIcons(MyIconStoreRequest $request)
